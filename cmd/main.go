@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	fmt.Printf("Input both strings seperated by space -\n")
 	var a, b string
 
 	_, err := fmt.Scanf("%s %s", &a, &b)

@@ -1,22 +1,17 @@
 package diffry
 
+import (
+	"fmt"
+	"math"
+	"strconv"
+
+	"github.com/logrusorgru/aurora"
+)
+
 type kStore struct {
 	arr    []int
 	offset int
 }
-
-//type trace struct {
-//	editScriptLen int
-//	traces        []*kStore
-//	a          []byte
-//	b          []byte
-//}
-
-//func (t *trace) push(ks *kStore){
-//	k := newKStore(len(ks.arr)/2)
-//	copy(k.arr, ks.arr)
-//	t.traces = append(t.traces, k)
-//}
 
 func newKStore(size int) *kStore {
 	return &kStore{make([]int, (size*2)+1), size}
@@ -37,40 +32,10 @@ func (k *kStore) set(idx, val int) {
 	k.arr[idx] = val
 }
 
-//type point struct {
-//	x, y int
-//}
-
 type move struct {
 	oldpos point
 	newpos point
 }
-
-//type snake struct {
-//	moves []move
-//	a, b []byte
-//}
-
-//func (s *snake) push(m move) {
-//	s.moves = append(s.moves, m)
-//}
-
-//func newSnake(a, b []byte) *snake {
-//	return &snake{
-//		make([]move, 0),
-//		a,
-//		b,
-//	}
-//}
-
-//func (s *snake) Print() {
-//	for i := 0; i < len(s.moves) ; i++ {
-//		oldp := s.moves[i].oldpos
-//		newp := s.moves[i].newpos
-//		fmt.Printf("(%d, %d) -> (%d, %d)\n", oldp.x, oldp.y, newp.x, newp.y)
-//	}
-//	fmt.Println()
-//}
 
 type line struct {
 	nr   int
@@ -84,194 +49,334 @@ type edit struct {
 	data   string
 }
 
-// type editSript struct {
-// 	edits []*edit
-// }
+type point struct {
+	x, y int
+}
 
-//func newEditScript(a, b string) *editSript {
-//	s := genSnake(genTraces([]byte(a), []byte(b)))
-//	//s.Print()
-//	edits := genEdits(s)
-//	es := &editSript{edits}
-//	return es
-//}
+func (p *point) String() string {
+	return fmt.Sprintf("(%d, %d)", p.x, p.y)
+}
 
-//func genTraces(a []byte, b []byte) *trace {
-//	an := len(a)
-//	bn := len(b)
+type bound struct {
+	beg  point
+	end  point
+	a, b []rune
+}
 
-//	maxEdits := an + bn
+type snake []point
 
-//	ks := newKStore(maxEdits)
+func (s *snake) Empty() bool {
+	if len(*s) != 0 {
+		return false
+	}
+	return true
+}
 
-//	tc := &trace{}
-//	tc.a = a
-//	tc.b = b
+func (b *bound) width() int {
+	return b.end.x - b.beg.x
+}
 
-//	var gotToEnd bool
-//	for d := 0; d <= maxEdits; d++ {
-//		for k := -d; k <= d; k += 2 {
+func (b *bound) height() int {
+	return b.end.y - b.beg.y
+}
 
-//			var farX, prevK int
-//			shouldGoDown := k == -d || (k != d && ks.get(k-1) < ks.get(k+1))
+func (b *bound) Delta() int {
+	return b.width() - b.height()
+}
 
-//			if shouldGoDown {
-//				prevK = k + 1
-//			} else {
-//				prevK = k - 1
-//			}
+func (b *bound) Size() int {
+	return b.width() + b.height()
+}
 
-//			farX = ks.get(prevK)
-//			if !shouldGoDown {
-//				farX += 1
-//			}
-//			farY := farX - k
+func (b *bound) Empty() bool {
+	if b.width() == 0 && b.height() == 0 {
+		return true
+	}
+	return false
+}
 
-//			// Advance farX, farY to end of the snake if exists
-//			for farX < an && farY < bn && a[farX] == b[farY] {
-//				farX += 1
-//				farY += 1
-//			}
+func forwardSnake(b bound, fks, bks *kStore, d int) snake {
 
-//			if farX >= an && farY >= bn {
-//				gotToEnd = true
-//				break
-//			}
+	var midSnake snake
 
-//			ks.set(k, farX)
-//		}
-//		tc.push(ks)
+	for k := d; k >= -d; k -= 2 {
 
-//		if gotToEnd {
-//			break
-//		}
-//	}
-//	return tc
-//}
+		var x, y, prevX, prevY, prevK int
+		cameFromUp := k == -d || (k != d && fks.get(k-1) < fks.get(k+1))
 
-//func genSnake(tc *trace) *snake {
-//	x := len(tc.a)
-//	y := len(tc.b)
+		if cameFromUp {
+			prevK = k + 1
+		} else {
+			prevK = k - 1
+		}
 
-//	k := x - y
+		x = fks.get(prevK)
+		prevX = x
+		if !cameFromUp {
+			x += 1
+		}
 
-//	s := newSnake(tc.a, tc.b)
+		y = (x - b.beg.x) - k + b.beg.y
+		if d == 0 || !cameFromUp {
+			prevY = y
+		} else {
+			prevY = y - 1
+		}
 
-//	for d := len(tc.traces)-1; d > 0; d-- {
+		// Advance x, y to end of the snake if exists
+		for x < b.end.x && y < b.end.y && b.a[x] == b.b[y] {
+			x += 1
+			y += 1
+		}
 
-//		t := tc.traces[d-1]
+		fks.set(k, x)
 
-//		shouldGoUp := k == -d || k != d && t.get(k-1) < t.get(k+1)
+		delta := b.Delta()
+		c := k - delta
+		if c >= -(d-1) && c <= (d-1) {
+			if (delta&1) == 1 && y >= bks.get(c) {
+				midSnake = append(midSnake, point{prevX, prevY})
+				midSnake = append(midSnake, point{x, y})
+				break
+			}
+		}
+	}
+	return midSnake
+}
 
-//		var prevX, prevY, prevK int
+func backwardSnake(b bound, fks, bks *kStore, d int) snake {
 
-//		if shouldGoUp {
-//			prevK = k + 1
-//		} else {
-//			prevK = k - 1
-//		}
+	var midSnake snake
 
-//		prevX = t.get(prevK)
-//		prevY = prevX - prevK
+	for c := d; c >= -d; c -= 2 {
 
-//		for x > prevX && y > prevY {
-//			mv := move{point{x-1, y-1}, point{x, y}}
-//			s.push(mv)
-//			x -= 1
-//			y -= 1
-//		}
+		var x, y, prevX, prevY, prevC int
+		cameFromRight := c == -d || (c != d && bks.get(c-1) < bks.get(c+1))
 
-//		mv := move{point{prevX, prevY}, point{x, y}}
-//		s.push(mv)
-//		x = prevX
-//		y = prevY
-//		k = prevK
+		if cameFromRight {
+			prevC = c + 1
+		} else {
+			prevC = c - 1
+		}
 
-//		if prevX == 0 && prevY == 0 {
-//			break
-//		}
-//	}
+		y = bks.get(prevC)
+		prevY = y
+		if !cameFromRight {
+			y -= 1
+		}
 
-//	return s
-//}
+		delta := b.Delta()
+		k := c + delta
 
-//func genEdits(s *snake) []*edit {
-//	edits := make([]*edit, len(s.moves))
-//	n := len(s.moves)
+		// Need to use k diagonal to get the correct y
+		x = (y - b.beg.y) + k + b.beg.x
+		if d == 0 || !cameFromRight {
+			prevX = x
+		} else {
+			prevX = x + 1
+		}
 
-//	newLnr := 0
-//	eIdx := 0
-//	for i := n-1; i >= 0; i-- {
-//		oldp := s.moves[i].oldpos
-//		newp := s.moves[i].newpos
+		// Advance x, y to start of the snake if exists
+		for x > b.beg.x && y > b.beg.y && b.a[x-1] == b.b[y-1] {
+			x -= 1
+			y -= 1
+		}
 
-//		var e edit
-//		if oldp.y == newp.y {
-//			e = edit{
-//				old: &line{oldp.x + 1, string(s.a[oldp.x])},
-//				new: nil,
-//				action: "-",
-//				data: string(s.a[oldp.x]),
-//			}
-//		} else if oldp.x == newp.x {
-//			newLnr += 1
-//			e = edit{
-//				old: nil,
-//				new: &line{newLnr, string(s.b[oldp.y])},
-//				action: "+",
-//				data: string(s.b[oldp.y]),
-//			}
-//		} else {
-//			newLnr += 1
-//			e = edit{
-//				old: &line{oldp.x, string(s.a[oldp.x])},
-//				new: &line{newLnr, string(s.b[oldp.y])},
-//				action: "=",
-//				data: string(s.a[oldp.x]),
-//			}
-//		}
-//		edits[eIdx] = &e
-//		eIdx += 1
-//	}
-//	return edits
-//}
+		bks.set(c, y)
 
-//func printEditscript(es *editSript){
-//	for i := 0; i < len(es.edits); i++ {
-//		e := es.edits[i]
+		if k >= -d && k <= d {
+			if (delta&1) == 0 && x <= fks.get(k) {
+				midSnake = append(midSnake, point{x, y})
+				midSnake = append(midSnake, point{prevX, prevY})
+				break
+			}
+		}
+	}
+	return midSnake
+}
 
-//		soldlnr := " "
-//		snewlnr := " "
+func findMidSnake(b bound) snake {
 
-//		if e.old != nil {
-//			soldlnr = strconv.Itoa(e.old.nr)
-//		}
+	if b.Empty() {
+		return make([]point, 0)
+	}
 
-//		if e.new != nil {
-//			snewlnr = strconv.Itoa(e.new.nr)
-//		}
+	d := b.Size()/2 + 1
+	fks := newKStore(d)
+	fks.set(1, b.beg.x)
+	bks := newKStore(d)
+	bks.set(1, b.end.y)
 
-//		o := fmt.Sprintf("  %s    %s    %s    %s", e.action, soldlnr, snewlnr, e.data)
+	var midSnake snake
+	for i := 0; i <= d; i++ {
+		fs := forwardSnake(b, fks, bks, i)
+		if !fs.Empty() {
+			midSnake = fs
+			break
+		}
 
-//		if e.action == "+" {
-//			o = aurora.Green(o).String()
-//		} else if e.action == "-" {
-//			o = aurora.Red(o).String()
-//		}
+		bs := backwardSnake(b, fks, bks, i)
+		if !bs.Empty() {
+			midSnake = bs
+			break
+		}
+	}
+	return midSnake
+}
 
-//		fmt.Println(o)
-//	}
-//}
+func buildSnake(b bound) snake {
+	var fullSnake snake
 
-///*
-//ABCABBA
-//CBABAC
+	midSnake := findMidSnake(b)
 
-//abbcghatt
-//lokiubbcatt
+	if midSnake.Empty() {
+		//fmt.Println()
+		fullSnake = append(fullSnake, b.beg)
+		return fullSnake
+	}
+	//fmt.Printf("(%d, %d), (%d, %d)\n", midSnake[0].x, midSnake[0].y, midSnake[1].x, midSnake[1].y)
+	headBox := bound{b.beg, midSnake[0], b.a, b.b}
+	tailBox := bound{midSnake[len(midSnake)-1], b.end, b.a, b.b}
 
-//*/
+	headSnake := buildSnake(headBox)
+	tailSnake := buildSnake(tailBox)
 
-//func Diff(a, b string) {
-//	printEditscript(newEditScript(a, b))
-//}
+	if !headSnake.Empty() {
+		fullSnake = append(fullSnake, headSnake...)
+	}
+
+	if !tailSnake.Empty() {
+		fullSnake = append(fullSnake, tailSnake...)
+	}
+
+	return fullSnake
+}
+
+func buildMoves(b bound, s snake) []move {
+	moves := make([]move, 0)
+
+	for i := 1; i < len(s); i++ {
+
+		x := s[i-1].x
+		y := s[i-1].y
+
+		// Follows the diagonal if present
+		for x < s[i].x && y < s[i].y && b.a[x] == b.b[y] {
+			m := move{point{x, y}, point{x + 1, y + 1}}
+			moves = append(moves, m)
+			x += 1
+			y += 1
+		}
+
+		xd := math.Abs(float64(x - s[i].x))
+		yd := math.Abs(float64(y - s[i].y))
+
+		if xd > yd {
+			m := move{point{x, y}, point{x + 1, y}}
+			x += 1
+			moves = append(moves, m)
+		}
+
+		if xd < yd {
+			m := move{point{x, y}, point{x, y + 1}}
+			y += 1
+			moves = append(moves, m)
+		}
+
+		// Follows the diagonal if present
+		for x < s[i].x && y < s[i].y && b.a[x] == b.b[y] {
+			m := move{point{x, y}, point{x + 1, y + 1}}
+			moves = append(moves, m)
+			x += 1
+			y += 1
+		}
+
+	}
+
+	return moves
+}
+
+func genEdits(b bound, moves []move) []*edit {
+	edits := make([]*edit, len(moves))
+	n := len(moves)
+
+	newLnr := 0
+	eIdx := 0
+	for i := 0; i < n; i++ {
+		oldp := moves[i].oldpos
+		newp := moves[i].newpos
+
+		var e edit
+		if oldp.y == newp.y {
+			e = edit{
+				old:    &line{oldp.x + 1, string(b.a[oldp.x])},
+				new:    nil,
+				action: "-",
+				data:   string(b.a[oldp.x]),
+			}
+		} else if oldp.x == newp.x {
+			newLnr += 1
+			e = edit{
+				old:    nil,
+				new:    &line{newLnr, string(b.b[oldp.y])},
+				action: "+",
+				data:   string(b.b[oldp.y]),
+			}
+		} else {
+			newLnr += 1
+			e = edit{
+				old:    &line{oldp.x, string(b.a[oldp.x])},
+				new:    &line{newLnr, string(b.b[oldp.y])},
+				action: "=",
+				data:   string(b.a[oldp.x]),
+			}
+		}
+		edits[eIdx] = &e
+		eIdx += 1
+	}
+	return edits
+}
+
+func printEdits(edits []*edit) {
+	for i := 0; i < len(edits); i++ {
+		e := edits[i]
+
+		soldlnr := " "
+		snewlnr := " "
+
+		if e.old != nil {
+			soldlnr = strconv.Itoa(e.old.nr)
+		}
+
+		if e.new != nil {
+			snewlnr = strconv.Itoa(e.new.nr)
+		}
+
+		o := fmt.Sprintf("  %s    %s    %s    %s", e.action, soldlnr, snewlnr, e.data)
+
+		if e.action == "+" {
+			o = aurora.Green(o).String()
+		} else if e.action == "-" {
+			o = aurora.Red(o).String()
+		}
+
+		fmt.Println(o)
+	}
+}
+
+func Diff(sa, sb string) {
+	a := []rune(sa)
+	b := []rune(sb)
+
+	box := bound{
+		point{0, 0},
+		point{len(a), len(b)},
+		a,
+		b,
+	}
+	snake := buildSnake(box)
+	moves := buildMoves(box, snake)
+	edits := genEdits(box, moves)
+
+	printEdits(edits)
+}
