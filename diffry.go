@@ -1,4 +1,4 @@
-package diffry
+package main
 
 import (
 	"fmt"

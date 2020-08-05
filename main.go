@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ataul443/diffry"
 )
 
 func main() {
@@ -18,5 +17,5 @@ func main() {
 	}
 
 	// diffry.Diff(a, b)
-	diffry.Diff(a, b)
+	Diff(a, b)
 }

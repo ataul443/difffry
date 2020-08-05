@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d4ba3db1-c3c1-400b-94ea-abd6c77b9065" name="Default Changelist" comment="" />
+    <list default="true" id="d4ba3db1-c3c1-400b-94ea-abd6c77b9065" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diffry.go" beforeDir="false" afterPath="$PROJECT_DIR$/diffry.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="GOROOT" path="/usr/lib/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
   </component>
@@ -25,7 +34,21 @@
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Build.go build github.com/ataul443/diffry">
+    <configuration name="go build github.com/ataul443/diffry" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="diffry" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <package value="github.com/ataul443/diffry" />
+      <directory value="$PROJECT_DIR$/" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build github.com/ataul443/diffry/cmd" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="diffry" />
       <working_directory value="$PROJECT_DIR$" />
@@ -37,6 +60,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Build.go build github.com/ataul443/diffry" />
         <item itemvalue="Go Build.go build github.com/ataul443/diffry/cmd" />
       </list>
     </recent_temporary>
@@ -71,54 +95,30 @@
     <proxy>direct</proxy>
   </component>
   <component name="WindowStateProjectService">
-    <state x="398" y="174" width="559" height="383" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1586909160463">
+    <state x="436" y="211" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1596601091303">
       <screen x="0" y="0" width="1366" height="768" />
     </state>
-    <state x="398" y="174" width="559" height="383" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1366.768@0.0.1366.768" timestamp="1586909160463" />
-    <state width="660" height="438" key="DebuggerActiveHint" timestamp="1586919544475">
+    <state x="436" y="211" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1366.768@0.0.1366.768" timestamp="1596601091303" />
+    <state x="386" y="51" key="#go_build_github.com/ataul443/diffry/cmd" timestamp="1596601180190">
       <screen x="0" y="0" width="1366" height="768" />
     </state>
-    <state width="660" height="438" key="DebuggerActiveHint/0.0.1366.768@0.0.1366.768" timestamp="1586919544475" />
-    <state width="1278" height="485" key="GridCell.Tab.0.bottom" timestamp="1587266524581">
+    <state x="386" y="51" key="#go_build_github.com/ataul443/diffry/cmd/0.0.1366.768@0.0.1366.768" timestamp="1596601180190" />
+    <state width="1254" height="329" key="GridCell.Tab.0.bottom" timestamp="1596601212084">
       <screen x="0" y="0" width="1366" height="768" />
     </state>
-    <state width="1278" height="485" key="GridCell.Tab.0.bottom/0.0.1366.768@0.0.1366.768" timestamp="1587266524581" />
-    <state width="1278" height="485" key="GridCell.Tab.0.center" timestamp="1587266524580">
+    <state width="1254" height="329" key="GridCell.Tab.0.bottom/0.0.1366.768@0.0.1366.768" timestamp="1596601212084" />
+    <state width="1254" height="329" key="GridCell.Tab.0.center" timestamp="1596601212083">
       <screen x="0" y="0" width="1366" height="768" />
     </state>
-    <state width="1278" height="485" key="GridCell.Tab.0.center/0.0.1366.768@0.0.1366.768" timestamp="1587266524580" />
-    <state width="1278" height="485" key="GridCell.Tab.0.left" timestamp="1587266524580">
+    <state width="1254" height="329" key="GridCell.Tab.0.center/0.0.1366.768@0.0.1366.768" timestamp="1596601212083" />
+    <state width="1254" height="329" key="GridCell.Tab.0.left" timestamp="1596601212081">
       <screen x="0" y="0" width="1366" height="768" />
     </state>
-    <state width="1278" height="485" key="GridCell.Tab.0.left/0.0.1366.768@0.0.1366.768" timestamp="1587266524580" />
-    <state width="1278" height="485" key="GridCell.Tab.0.right" timestamp="1587266524580">
+    <state width="1254" height="329" key="GridCell.Tab.0.left/0.0.1366.768@0.0.1366.768" timestamp="1596601212081" />
+    <state width="1254" height="329" key="GridCell.Tab.0.right" timestamp="1596601212083">
       <screen x="0" y="0" width="1366" height="768" />
     </state>
-    <state width="1278" height="485" key="GridCell.Tab.0.right/0.0.1366.768@0.0.1366.768" timestamp="1587266524580" />
-    <state width="710" height="573" key="GridCell.Tab.1.bottom" timestamp="1587266524577">
-      <screen x="0" y="0" width="1366" height="768" />
-    </state>
-    <state width="710" height="573" key="GridCell.Tab.1.bottom/0.0.1366.768@0.0.1366.768" timestamp="1587266524577" />
-    <state width="710" height="573" key="GridCell.Tab.1.center" timestamp="1587266524577">
-      <screen x="0" y="0" width="1366" height="768" />
-    </state>
-    <state width="710" height="573" key="GridCell.Tab.1.center/0.0.1366.768@0.0.1366.768" timestamp="1587266524577" />
-    <state width="710" height="573" key="GridCell.Tab.1.left" timestamp="1587266524577">
-      <screen x="0" y="0" width="1366" height="768" />
-    </state>
-    <state width="710" height="573" key="GridCell.Tab.1.left/0.0.1366.768@0.0.1366.768" timestamp="1587266524577" />
-    <state width="710" height="573" key="GridCell.Tab.1.right" timestamp="1587266524577">
-      <screen x="0" y="0" width="1366" height="768" />
-    </state>
-    <state width="710" height="573" key="GridCell.Tab.1.right/0.0.1366.768@0.0.1366.768" timestamp="1587266524577" />
-    <state width="664" height="359" key="XDebugger.FullValuePopup" timestamp="1587166725411">
-      <screen x="0" y="0" width="1366" height="768" />
-    </state>
-    <state width="664" height="359" key="XDebugger.FullValuePopup/0.0.1366.768@0.0.1366.768" timestamp="1587166725411" />
-    <state x="346" y="89" key="search.everywhere.popup" timestamp="1586969643925">
-      <screen x="0" y="0" width="1366" height="768" />
-    </state>
-    <state x="346" y="89" key="search.everywhere.popup/0.0.1366.768@0.0.1366.768" timestamp="1586969643925" />
+    <state width="1254" height="329" key="GridCell.Tab.0.right/0.0.1366.768@0.0.1366.768" timestamp="1596601212083" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
